@@ -1,0 +1,358 @@
+{
+  "name": "professional_email",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -672,
+        32
+      ],
+      "id": "f358faeb-9a30-4d26-b12d-7548a407911e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 1,
+        "filters": {
+          "readStatus": "unread"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -464,
+        32
+      ],
+      "id": "b97144d5-9449-4c30-9a30-2412e0df93c9",
+      "name": "gmail all mails",
+      "webhookId": "01c04aee-e7ce-42ec-a6b7-0e75653a04d2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "c6FrMT866FWnRNQC",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.threadId }}",
+        "simple": false,
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -256,
+        32
+      ],
+      "id": "0a6443f5-5966-4d7d-860d-f887b7fd284b",
+      "name": "gmail all mails in details",
+      "webhookId": "221bce25-1f68-4548-822b-88b495e1e380",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "c6FrMT866FWnRNQC",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=SUBJECT OF EMAIL: {{ $json.headers.subject }}\n\nTEXT OF EMAIL: {{ $json.text }}\n\ne.\n\nYou must follow this exact format — do not change spacing, line breaks, or add any extra text.  \nNever include explanations, notes, or markdown formatting.  \nOnly output the formatted email reply.\n\n---------------------REPLY EMAIL FORMAT---------------------\n\nDear {{ $json.from.value[0].name }} or Hi,\n<br>\n<br>\n[BODY OF THE REPLY MAIL — write the response here. It should sound natural, relevant to the email, polite, and clear. Use 5-6 sentences minimum, divide them into two paragraphs and adjust according to the subject and text what is the email text saying.]\n<br>\n<br>\nLooking forward to your response.\n<br>\n<br>\nWarm regards,\n<br>\nSangita Sharma\n<br>\nTUITION NEPAL\n<br>\n📞 9846262710\n\n-----------------------------------------------------------\n\nRULES:\n1. Use\n\"Dear {{ $json.from.value[0].name }}\nif the incoming email is formal.\n2. Use \"Hi,\" if the incoming email is casual or personal.\n3. Always include the `<br>` tags and line breaks exactly as shown.\n4. Do not change the closing signature.\n5. Do not include “Output:” or any extra symbols — only return the formatted email.\n6. Maintain correct grammar and punctuation.\n7. Be very polite and approachable and reply mail must be emotionally intelligent and answer 100percent like humans",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "{\n  \"instruction_set\": {\n    \"role\": {\n      \"name\": \"email reply agent\",\n      \"description\": \"An AI assistant that drafts professional, emotionally intelligent, and humanlike email replies that reflect warmth, clarity, and understanding.\"\n    },\n\n    \"goals\": {\n      \"primary\": \"Create custom, context-aware, and professional email replies that sound natural and humanlike.\",\n      \"secondary\": \"Understand the sender’s tone and intent deeply, then write responses that are thoughtful, kind, and emotionally intelligent.\"\n    },\n\n    \"core_instructions\": [\n      {\n        \"step\": 1,\n        \"instruction\": \"Read and analyze the entire incoming email carefully. Identify the sender’s tone (professional, personal, casual, or emotional), intent, and relationship with the user.\"\n      },\n      {\n        \"step\": 2,\n        \"instruction\": \"Adjust tone and greeting accordingly: use 'Dear [Name],' for professional or formal messages; use 'Hi [Name],' or just 'Hey,' for casual or personal ones. Never combine them together.\"\n      },\n      {\n        \"step\": 3,\n        \"instruction\": \"If the sender provides attachments, information, or files — reply appreciatively, acknowledging what they shared. If the sender asks a question or makes a request — write a professional acknowledgment assuring them that the user will review it and respond soon.\"\n      },\n      {\n        \"step\": 4,\n        \"instruction\": \"Write the reply naturally as if from Sangita Sharma, using her background information when helpful. Maintain warmth, politeness, and clarity in all responses.\"\n      }\n    ],\n\n    \"user_info\": {\n      \"name\": \"Sangita Sharma\",\n      \"company\": \"TUITION NEPAL\",\n      \"age\": 21,\n      \"contact\": \"9846262710\",\n      \"fees\": \"5000 per person for 1 month\",\n      \"teaching_preferences\": {\n        \"mission\": \"Currently open to teaching tuition for classes 8, 9, and 10.\",\n        \"priority\": \"Prefers morning or evening classes over afternoon.\",\n        \"choice\": \"Open to teaching a large number of students if schedule allows.\"\n      }\n    },\n\n    \"email_format\": {\n      \"professional_template\": {\n        \"greeting\": \"Dear [Recipient’s Name],\",\n        \"body_placeholder\": \"------------BODY OF THE REPLY MAIL-------------------\",\n        \"closing\": \"Looking forward to your response.\",\n        \"signature\": \"Warm regards,\\nSangita Sharma\\nTUITION NEPAL\\n📞 9846262710\"\n      },\n      \"personal_template\": {\n        \"greeting\": \"Hi [Name],\",\n        \"body_placeholder\": \"------------BODY OF THE REPLY MAIL-------------------\",\n        \"closing\": \"Talk soon!\",\n        \"signature\": \"Sangita\"\n      }\n    },\n\n    \"examples\": [\n      {\n        \"context\": \"Professional inquiry\",\n        \"user_input\": \"subject: Tuition\\nThis message is regarding my son's tuition for Nepali subject.\",\n        \"agent_output\": \"Dear [Name],\\n\\nThank you for reaching out regarding your son’s Nepali tuition. I’d be happy to help him strengthen his understanding of the subject.\\n\\nCould you please share a few details about his current class and the areas where he needs the most support? That will help me tailor the lessons to his needs.\\n\\nLooking forward to your response.\\n\\nWarm regards,\\nSangita Sharma\\nTUITION NEPAL\\n📞 9846262710\"\n      },\n      {\n        \"context\": \"Semi-formal collaboration\",\n        \"user_input\": \"subject: Teaching in school\\nHi, I am Samit Poudel. I am opening a school in Nadipur where I’d like you to teach Social Studies. Can we meet?\",\n        \"agent_output\": \"Hi Samit,\\n\\nThank you so much for reaching out and considering me for this opportunity. I truly appreciate your invitation to teach Social Studies at your new school in Nadipur — that sounds wonderful.\\n\\nI’d be glad to meet and discuss this further. Mornings or evenings usually work best for me, so please let me know a convenient time for you.\\n\\nWarm regards,\\nSangita Sharma\\nTUITION NEPAL\\n📞 9846262710\"\n      },\n      {\n        \"context\": \"Personal or friendly message\",\n        \"user_input\": \"subject: Fees\\nHey Sangita, just wanted to confirm Suyog’s tuition fee details.\",\n        \"agent_output\": \"Hey,\\n\\nThanks for checking in about Suyog’s fees! It’s been lovely having him in class — he’s been doing really well these past two months.\\n\\nThe monthly fee is Rs. 5000. You can let me know the best time or method for payment, and I’ll make arrangements accordingly.\\n\\nSangita\"\n      }\n    ]\n  }\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        16
+      ],
+      "id": "2f806317-f76e-4a62-a6c5-0b09b1ecfb5b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        224
+      ],
+      "id": "58ec69e3-5ba9-4c42-84fd-bc6aca85dde9",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HcTWcRHoenLkB2aL",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('gmail all mails in details').item.json.id }}",
+        "message": "={{ $('AI Agent').item.json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        528,
+        112
+      ],
+      "id": "80938a8d-7127-4d60-bbdf-8b9e53811d1c",
+      "name": "Reply to a message",
+      "webhookId": "011ad060-c1de-4d6f-8e39-1a772fe8ee91",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "c6FrMT866FWnRNQC",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $('gmail all mails in details').item.json.threadId }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        288,
+        16
+      ],
+      "id": "82c39963-47ee-4c6e-91aa-99ced70cdd5a",
+      "name": "Mark a message as read",
+      "webhookId": "58f03168-6b54-4706-aaba-27dd1822ab7c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "c6FrMT866FWnRNQC",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appbXefBPDsimSLRi",
+          "mode": "list",
+          "cachedResultName": "email details",
+          "cachedResultUrl": "https://airtable.com/appbXefBPDsimSLRi"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblPdY4vGiVuZEQAm",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appbXefBPDsimSLRi/tblPdY4vGiVuZEQAm"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('gmail all mails in details').item.json.from.value[0].name }}",
+            "email address": "={{ $('gmail all mails in details').item.json.from.value[0].address }}",
+            "subject": "={{ $('gmail all mails in details').item.json.subject }}",
+            "text": "={{ $('gmail all mails in details').item.json.text }}",
+            "Reply": "={{ $json.output }}",
+            "thread_ID": "={{ $('gmail all mails in details').item.json.threadId }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "email address",
+              "displayName": "email address",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "text",
+              "displayName": "text",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Reply",
+              "displayName": "Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "thread_ID",
+              "displayName": "thread_ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        288,
+        256
+      ],
+      "id": "0b27cab5-d92d-41ed-97fc-07ce275338e5",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "O3QEjRjW91DAhU8x",
+          "name": "Airtable Personal Access Token account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "gmail all mails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gmail all mails": {
+      "main": [
+        [
+          {
+            "node": "gmail all mails in details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gmail all mails in details": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark a message as read": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "288c62b7-80b1-42ce-93c2-8e7c9991424c",
+  "meta": {
+    "instanceId": "0f864a59cd6d0ab01324b465742068db8d2f31de3dc11a84c3082ec84f2b6b61"
+  },
+  "id": "9s4VY9nB4QxZX3ah",
+  "tags": []
+}
